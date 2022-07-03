@@ -110,7 +110,13 @@ public extension ERWeakLinkHandle {
  ```
  */
 public func ERWeakLinkSymbol<T>(_ symbol: UnsafePointer<CChar>, _ handle: ERWeakLinkHandle!) -> T! {
-    dlsym(handle?.openFirstMatch(), symbol).flatMap {
+    func imageForHandle(_ handle: ERWeakLinkHandle?) -> UnsafeMutableRawPointer! {
+        if let handle = handle {
+            return handle.openFirstMatch()
+        }
+        return dlopen(nil, RTLD_GLOBAL)
+    }
+    return dlsym(imageForHandle(handle), symbol).flatMap {
         if T.self is AnyObject.Type {
             return $0.assumingMemoryBound(to: T.self).pointee
         } else {
