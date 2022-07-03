@@ -39,6 +39,10 @@ public enum ERWeakLinkHandle: ExpressibleByStringLiteral, Hashable {
         innerValue.withExtension(fileExtension)
     }
     
+    public func resolve() -> String? {
+        absoluteSearchPaths.first(where: { dlopen_preflight($0) })
+    }
+    
     @_spi(weakLinkSearchPaths) public var searchPaths: [String] {
         switch self {
         case .raw, .string: return []
